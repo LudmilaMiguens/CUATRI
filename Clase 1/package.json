@@ -1,0 +1,15 @@
+{
+  "name": "ejempli",
+  "version": "1.0.0",
+  "description": "descripcion",
+  "main": "ejempli.js",
+  "scripts": {
+    "uno": "ejempli.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ludmila",
+  "license": "ISC",
+  "dependencies": {
+    "random-msg": "^1.0.0"
+  }
+}
