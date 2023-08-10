@@ -2,7 +2,7 @@ class Televisor {
   private isOn: boolean;
   private volume: number;
   private channel: number;
-  constructor(on: boolean = false, vol: number = 0, chn: number = 0) {
+  constructor(on: boolean = false, vol: number = 0, chn: number = 98) {
     this.isOn = on;
     this.volume = vol;
     this.channel = chn;
@@ -38,22 +38,22 @@ class Televisor {
   channelUp(): void {
     if (!this.isOn){
       return;
-    } if (this.channel < 99) {
-      this.channel ++;
-     console.log("channel up", this.channel);
+    } if (this.channel === 99) {
+      this.channel = 1
     } else {
-      console.log("channel maximo", this.channel);
+      this.channel ++;
     }
+     console.log("channel up", this.channel);
   }
   channelDown(): void {
     if (!this.isOn){
       return;
-    } if (this.channel > 1) {
-      this.channel -=1;
-    console.log("channel down", this.channel);
+    } if (this.channel === 1) {
+      this.channel = 99;
     } else{
-      console.log ("channel minimo", this.channel);
+      this.channel -=1;
     }
+    console.log("channel down", this.channel);
   }
   pickChannel(channel: number): void {
     if (!this.isOn) return;
@@ -61,9 +61,10 @@ class Televisor {
     console.log("Cambiaste al canal", this.channel);
   }
   info(): void {
-    console.log("canal", this.channel, "volumen", this.volume, "hora actual");
+    console.log("canal", this.channel, "volumen", this.volume, "hora actual", new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}));
   }
 }
+
 const tv01 = new Televisor();
 tv01.switchOnOff();
 tv01.volUp();
