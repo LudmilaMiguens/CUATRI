@@ -1,0 +1,11 @@
+"use strict";
+exports.__esModule = true;
+var vehiculo_1 = require("./vehiculo");
+var auto1 = new vehiculo_1.Autodeportivo("ford", "ka", 1999, ["Vuela", "va rapido"]);
+auto1.prender();
+auto1.acelerar();
+auto1.acelerar();
+auto1.frenar();
+auto1.apagar();
+auto1.obtenerInfo();
+console.log(auto1.accesorios);
