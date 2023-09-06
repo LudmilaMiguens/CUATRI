@@ -33,7 +33,6 @@ export class Autodeportivo extends Vehiculo{
     public constructor(marca: string, modelo: string, año: number, accesorios: string[]){
         super(marca, modelo, año);
         this.accesorios = accesorios;
-
     }
     acelerar(): void {
         this.velocidadActual += 50;
@@ -41,5 +40,4 @@ export class Autodeportivo extends Vehiculo{
     frenar(): void {
         this.velocidadActual -=10;
     }
-
 }

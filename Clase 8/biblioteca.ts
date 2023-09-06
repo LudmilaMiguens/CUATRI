@@ -114,19 +114,22 @@ class Biblioteca{
         this.prestamos.push(nuevoPrestamo);
         console.log(this.prestamos);
     }   
-
     public listadoPrestamos(): Prestamos[]{
         return this.prestamos;
     }
-
 }
+
 let biblioteca1 = new Biblioteca("AS", "25 de mayo");
+
 let libro1 = new Libro("Casita", "Cosito", 1896,);
 let libro2 = new Libro("Casitassss", "Cositosss", 18966,);
+
 let revista1 = new Revista("Moda", "Pindonga", 2013);
+
 let cliente1 = new Cliente("Ludmila", "Miguens", "uriburu", 289355);
 let cliente2 =new Cliente ("Toque", "Ruiz","pepito 22", 25892);
 let cliente3 = new Cliente ("pepita", "Lopez", "Peron 55", 558542);
+
 let prestamo1 = new Prestamos(cliente1, libro1);
 let prestamo2 = new Prestamos (cliente2, libro1);
 let prestamo3 = new Prestamos (cliente3, revista1);
