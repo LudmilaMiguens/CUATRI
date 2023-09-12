@@ -34,8 +34,6 @@ class Guerrero extends Personaje{
     }
 
     public usarEscudo(){
-        
-
         console.log( "Usando Escudo");
     }
 
