@@ -19,7 +19,18 @@ class AdministradorDeArchivos{ //clase autilitaria, tiene solo metodos, no gerer
             console.log("Sucedio un error: ", error);
         } rs.keyInPause("\n")
     }
+    static agregarPrestamo(data: Prestamos[]){
+        try {
+            fs.writeFileSync("./listaDePrestamos.json",JSON.stringify(data),{encoding: "utf-8"});
+            console.log("Operacion exitosa!\n");
+            rs.keyInPause("\n");
+        } catch (error) {
+            console.log("Sucedio un error", error);
+            rs.keyInPause("\n");         
+        }
+    }
 }
+
 
  export class AdministradorDePrestamos {
     private prestamos: Prestamos[];
@@ -48,27 +59,86 @@ class AdministradorDeArchivos{ //clase autilitaria, tiene solo metodos, no gerer
         }
         rs.keyInPause("\n")
     }
-    public retirarElemento(cliente: Cliente, elemento: Libreria){
-        const nuevoPrestamo = new Prestamos(cliente, elemento);
-        
-        console.log("Retiro excelente");        
+    public crearPrestamo(){
+        console.log("**** Crear Prestamo ****");
+        const leerPrestamo = AdministradorDeArchivos.leerArchivos();
+        if(leerPrestamo){
+            this.prestamos = leerPrestamo;
+        }
+        const cliente = rs.question ("Ingrese su nombre: ");
+        const elemento = rs.question("Ingrese el nombre del elemento: ");
+        rs.keyInPause();
+        const newPrestamo = new Prestamos(clientes, elemento);
+        this.prestamos.push(newPrestamo);
+        rs.keyInPause();
+        AdministradorDeArchivos.agregarPrestamo(this.prestamos);
+        console.log(this.prestamos);
+        rs.keyInPause("");       
     }
-    public devolverElemento(cliente: Cliente, elemento: Libreria){
-        const devolverPrestamo = new Prestamos(cliente, elemento);
+    
+    public borrarPrestamo(){
+        console.log("**** Borrar Prestamo ****");
+        const leerPrestamo = AdministradorDeArchivos.leerArchivos();
+        if(leerPrestamo){
+            this.prestamos = leerPrestamo;
+        }
+        rs.keyInPause("");
+        const idParaModificar = rs.question("Ingrese el id del prestamo a modificar: ");
+        const registro = this.prestamos.findIndex((prestamos) => prestamos.getId() === idParaModificar);
+        if (registro !== -1){
+            const grabarActualizacion = this.prestamos[registro];
+            const confirmacion = rs.keyInYN("Quieres eliminar este prestamo?") // que muestre el prestamo que encontro
+            if (confirmacion){
+                this.prestamos.splice(registro,1);
+                AdministradorDeArchivos.agregarPrestamo(this.prestamos);
+            }else{
+                console.log("Se cancelo la eliminacion del prestamo ");
+            }
+        } else{
+                console.log("Prestamo no existente ");
+            }
+            rs.keyInPause();    
+    }
 
-        console.log("Devolucion excelente");
+    public modificarPrestamo(){
+        console.log("**** Modificar Prestamo ****");
+        const leerPrestamo = AdministradorDeArchivos.leerArchivos();
+        if(leerPrestamo){
+            this.prestamos = leerPrestamo;
+        }
+        rs.keyInPause("");
+        const idParaModificar = rs.question("Ingrese el id del prestamo a modificar: ");
+        const registro = this.prestamos.findIndex((prestamos) => prestamos.getId() === idParaModificar);
+        if (registro !== -1){
+            const grabarActualizacion = this.prestamos[registro];
+            const confirmacion = rs.keyInYN("Quieres actualizar?")
+            if (confirmacion){
+                //const cliente = rs.question ("Ingrese su nombre: ");
+                const newElemento = rs.question("Ingrese el nombre del elemento: ");
+                grabarActualizacion.getElementos() = newElemento;
+                AdministradorDeArchivos.agregarPrestamo(this.prestamos); 
+            }else{
+                console.log("Actualizacion cancelada ");
+            }
+        } else {
+            console.log("El prestami no existe ");
+        }
+        rs.keyInPause();
     } 
+
     public menu(){
         while(true){
             console.clear() // Limpia la consola
             const eleccion = rs.keyInSelect(this.opcionesMenu) // Con keyInSelect seleccionamos la opcion que elege el cliente
             switch(eleccion){
                 case 0:
+                    this.crearPrestamo();
+                    break;
                 case 1:
-                   // this.retirarElemento();
+                   this.modificarPrestamo();
                     break;
                 case 2:
-                    //this.devolverElemento();
+                     this.borrarPrestamo();
                     break;
                 case 3:
                     this.leerPrestamos();
@@ -80,9 +150,9 @@ class AdministradorDeArchivos{ //clase autilitaria, tiene solo metodos, no gerer
         }
     }
     opcionesMenu = [
-    "Agregar un elemento",
-   "Retirar un elemento",
-   "Devolver un elemento",
+    "Crear un prestamo",
+   "Modificar un prestamo",
+   "Borrar un prestamo",
    "Lista de prestamos activos"
 ]
 }
