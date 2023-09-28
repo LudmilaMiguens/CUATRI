@@ -5,12 +5,12 @@ var node_crypto_1 = require("node:crypto");
 var Cliente = /** @class */ (function () {
     function Cliente(nombre, apellido, direccion, cel) {
         this.id = (0, node_crypto_1.randomUUID)();
-        this.puntos = 0;
-        this.penalizacion = false;
         this.nombre = nombre;
         this.apellido = apellido;
         this.direccion = direccion;
         this.cel = cel;
+        this.puntos = 0;
+        this.penalizacion = false;
     }
     Cliente.prototype.setNombre = function (nombre) {
         this.nombre = nombre;
@@ -23,6 +23,18 @@ var Cliente = /** @class */ (function () {
     };
     Cliente.prototype.setCel = function (cel) {
         this.cel = cel;
+    };
+    Cliente.prototype.setPenalizado = function () {
+        if (!this.penalizacion) {
+            this.penalizacion = true;
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    Cliente.prototype.setDespenalizar = function () {
+        this.penalizacion = false;
     };
     Cliente.prototype.getId = function () {
         return this.id;
@@ -45,8 +57,8 @@ var Cliente = /** @class */ (function () {
     Cliente.prototype.addPuntos = function (puntos) {
         this.puntos += puntos;
     };
-    Cliente.prototype.removePuntos = function (puntos) {
-        this.puntos -= puntos;
+    Cliente.prototype.removePuntos = function () {
+        this.puntos--;
     };
     return Cliente;
 }());

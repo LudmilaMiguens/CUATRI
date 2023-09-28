@@ -7,13 +7,15 @@ export class Cliente{
     private apellido: string;
     private direccion: string;
     private cel: number;
-    private puntos: number = 0;
-    private penalizacion: boolean = false;
+    private puntos: number;
+    private penalizacion: boolean;
     public constructor(nombre: string, apellido: string, direccion: string, cel: number){
         this.nombre = nombre;
         this.apellido = apellido;
         this.direccion = direccion;
         this.cel = cel;
+        this.puntos = 0;
+        this.penalizacion = false;
     }
     public setNombre(nombre: string): void{
         this.nombre = nombre;
@@ -26,6 +28,17 @@ export class Cliente{
     }
     public setCel(cel:number): void{
         this.cel = cel;
+    }
+    public setPenalizado(): boolean{
+        if (!this.penalizacion){
+            this.penalizacion = true;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public setDespenalizar(): void{
+        this.penalizacion = false;
     }
     public getId(): string{
         return this.id;
@@ -48,8 +61,8 @@ export class Cliente{
     public addPuntos(puntos: number):void{
         this.puntos += puntos;
     }
-    public removePuntos(puntos: number): void{
-        this.puntos -= puntos;
+    public removePuntos(): void{
+        this.puntos --;
     }
     
 }

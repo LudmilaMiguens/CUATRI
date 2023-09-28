@@ -1,9 +1,7 @@
 "use strict";
 exports.__esModule = true;
 exports.Biblioteca = void 0;
-var cliente_1 = require("./cliente");
 var prestamo_1 = require("./prestamo");
-var libro_1 = require("./libro");
 var Biblioteca = /** @class */ (function () {
     function Biblioteca(nombre, domicilio) {
         this.nombre = nombre;
@@ -44,25 +42,29 @@ var Biblioteca = /** @class */ (function () {
     Biblioteca.prototype.listaElementos = function () {
         return this.elementos;
     };
+    // Metodo para realizar el prestamo
     Biblioteca.prototype.addPrestamos = function (cliente, elemento) {
-        if (!this.validarCliente(cliente)) {
+        if (!this.validarCliente(cliente)) { // Valida si existe el usuario
             console.log("El usuario no existe");
             return;
         }
         var elementoExistente = this.buscarElemento(elemento);
-        if (!elementoExistente || !elementoExistente.estaDisponible()) {
+        if (!elementoExistente || !elementoExistente.estaDisponible()) { //Validar si existe el elemento
             console.log("No esta disponible");
             return;
-        }
+        } /*const penalizado = cliente.setPenalizado();
+          if(penalizado){ // Validacion para ver si el usuario esta penalizado
+            console.log(cliente.getNombre(),"No puede retirar ", elemento.getTitulo(),"Usted esta penalizado");
+            return;
+        } */
         elementoExistente.marcarNoDisponible();
-        var nuevoPrestamo = new prestamo_1.Prestamos(cliente, elementoExistente);
-        this.prestamos.push(nuevoPrestamo);
+        var nuevoPrestamo = new prestamo_1.Prestamos(cliente, elementoExistente); //Tanto el cliente como el elemento existe y se puede realizar el prestamo
+        this.prestamos.push(nuevoPrestamo); // Se agrega el prestamo al arreglo de prestamos
         console.log(cliente.getNombre(), "retira ", elemento.getTitulo(), nuevoPrestamo.getFechaInicio().toLocaleDateString(), "con fecha de devolucion", nuevoPrestamo.getVencimiento().toLocaleDateString());
     };
     Biblioteca.prototype.devolverElemento = function (elemento, cliente, fechaDevolucion) {
         var prestamo = this.encontarPrestamosActivos(elemento, cliente);
         if (!prestamo) {
-            //  throw new Error
             console.log("Prestamo no registrado.");
             return;
         }
@@ -72,7 +74,7 @@ var Biblioteca = /** @class */ (function () {
         }
         var fechaVencimiento = prestamo.getVencimiento();
         if (fechaDevolucion > fechaVencimiento) {
-            var diasDemora = Math.ceil((fechaDevolucion.getTime()) - fechaVencimiento.getTime());
+            var diasDemora = Math.ceil(((fechaDevolucion.getTime()) - (fechaVencimiento.getTime())) / (1000 * 3600 * 24));
             var cargaPorDemora = 0;
             switch (true) {
                 case diasDemora >= 1 && diasDemora < 2:
@@ -84,19 +86,27 @@ var Biblioteca = /** @class */ (function () {
                 case diasDemora > 5 && diasDemora <= 10:
                     cargaPorDemora = 6;
                     break;
-                case diasDemora > 10:
+                case diasDemora > 10: //Se elimina al cliente de la biblioteca por exceder el limite
+                    this.eliminarCliente(cliente);
                     console.log("".concat(cliente.getNombre(), " excedio el limite de dias de devolucion y fue eliminado"));
                     break;
                 default:
             }
-            cliente.addPuntos(cargaPorDemora);
+            cliente.addPuntos(cargaPorDemora); // Se le agregan los puntos al cliente.
             console.log("".concat(cliente.getNombre(), " devolvio ").concat(elemento.getTitulo(), " tarde. Usteded tiene una penalizacion de ").concat(cargaPorDemora, " puntos."));
+            cliente.setPenalizado();
         }
-        else {
-            console.log("".concat(cliente.getNombre(), " devolvio ").concat(elemento.getTitulo(), " en tiempo y forma"));
+        else { // Resta puntos o Despenaliza al usuario.
+            if (cliente.getPuntos() > 1) {
+                cliente.removePuntos();
+            }
+            else if (cliente.getPuntos() === 1) {
+                cliente.removePuntos();
+                cliente.setDespenalizar();
+            }
+            console.log("".concat(cliente.getNombre(), " devolvio ").concat(elemento.getTitulo(), " en tiempo y forma. Usted tien ").concat(cliente.getPuntos(), " puntos."));
         }
         this.prestamos = this.prestamos.filter(function (buscarPrestamo) { return buscarPrestamo !== prestamo; });
-        console.log(cliente.getNombre(), "devolvio", elemento.getTitulo(), "En la fecha");
     };
     Biblioteca.prototype.encontarPrestamosActivos = function (elemento, cliente) {
         return this.prestamos.find(function (prestamo) { return prestamo.getElementos() === elemento && prestamo.getCliente() === cliente; });
@@ -113,34 +123,3 @@ var Biblioteca = /** @class */ (function () {
     return Biblioteca;
 }());
 exports.Biblioteca = Biblioteca;
-// Creacion de biblioteca
-var biblioteca1 = new Biblioteca("AS", "25 de mayo");
-// Crearcion de elementos
-var libro1 = new libro_1.Libro("Casita", "Cosito", 1896);
-//let revista1 = new Revista ("Gente", "Mimina", 2023);
-// Creacion de clientes
-var cliente1 = new cliente_1.Cliente("Ludmila", "Miguens", "uriburu", 289355);
-//let cliente2 = new Cliente("Ludmilaaaaa", "Miguens", "uriburu", 289355);
-var prestamo1 = new prestamo_1.Prestamos(cliente1, libro1);
-//Agregamos los clientes a la biblioteca.
-biblioteca1.addCliente(cliente1);
-//biblioteca1.addCliente(cliente2);
-// Agregamos los elementos a la biblioteca.
-biblioteca1.addElemento(libro1);
-//biblioteca1.addElemento(revista1);
-// Realizamos un prestamo.
-biblioteca1.addPrestamos(cliente1, libro1);
-//biblioteca1.addPrestamos(cliente2,revista1);
-//biblioteca1.addPrestamos(cliente1,libro1); // No se puede realizar ya que esta prestado el libro.
-// Devolver el elemento.
-var fechaDevolucion = new Date();
-prestamo1.getVencimiento().setDate(fechaDevolucion.getDate() + 8);
-biblioteca1.devolverElemento(libro1, cliente1, fechaDevolucion);
-// Mostramos la lista de clientes.
-//biblioteca1.listaClientes();
-//biblioteca1.eliminarCliente(cliente1); // Eliminar cliente de la biblioteca.
-//biblioteca1.listaClientes();
-//Mostramos la lista de elementos.
-//console.log(biblioteca1.listaElementos());
-//biblioteca1.eliminarElementos(revista1); //Eliminamos un elemento de la biblioteca.
-//console.log(biblioteca1.listaElementos());

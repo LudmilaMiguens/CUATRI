@@ -4,13 +4,16 @@ import { Libreria } from './libreria';
 import { Prestamos } from './prestamo';
 import { Libro } from './libro';
 import { Revista } from './revista';
+import { administradorDePrestamos } from './convertirPrestamosTX';
+import * as fs from "file-system"
+
 
 export class Biblioteca{
     private nombre: string;
     private domicilio: string;
     private clientes: Cliente[];
     private elementos: Libreria[];
-    private prestamos: Prestamos[]
+    private prestamos: Prestamos[];
     public constructor(nombre: string, domicilio: string){
         this.nombre = nombre;
         this. domicilio = domicilio;
@@ -50,27 +53,31 @@ export class Biblioteca{
     public listaElementos(): Libreria[]{
         return this.elementos
     }
+    // Metodo para realizar el prestamo
     public addPrestamos(cliente:Cliente, elemento:Libreria): void{
-        if(!this.validarCliente(cliente)){
+         if(!this.validarCliente(cliente)){ // Valida si existe el usuario
             console.log("El usuario no existe");
             return;
         }
         const elementoExistente: Libreria | undefined = this.buscarElemento(elemento);
-        if(!elementoExistente || !elementoExistente.estaDisponible()){
+        if(!elementoExistente || !elementoExistente.estaDisponible()){ //Validar si existe el elemento
             console.log("No esta disponible");
             return;
-        }
+        } /*const penalizado = cliente.setPenalizado();
+          if(penalizado){ // Validacion para ver si el usuario esta penalizado
+            console.log(cliente.getNombre(),"No puede retirar ", elemento.getTitulo(),"Usted esta penalizado");
+            return;
+        } */
         elementoExistente.marcarNoDisponible();
-
-        const nuevoPrestamo = new Prestamos(cliente,elementoExistente);
-        this.prestamos.push(nuevoPrestamo);
+        const nuevoPrestamo = new Prestamos(cliente,elementoExistente); //Tanto el cliente como el elemento existe y se puede realizar el prestamo
+        this.prestamos.push(nuevoPrestamo); // Se agrega el prestamo al arreglo de prestamos
 
         console.log(cliente.getNombre(), "retira ", elemento.getTitulo(), nuevoPrestamo.getFechaInicio().toLocaleDateString(), "con fecha de devolucion", nuevoPrestamo.getVencimiento().toLocaleDateString());
     }   
     public devolverElemento(elemento : Libreria, cliente : Cliente, fechaDevolucion: Date): void{
         const prestamo = this.encontarPrestamosActivos(elemento, cliente);
+    
         if (!prestamo){
-            //  throw new Error
             console.log("Prestamo no registrado.");
             return;
         }
@@ -78,9 +85,10 @@ export class Biblioteca{
         if(elementoExistente){
             elementoExistente.marcarDisponible();
         }
-        const fechaVencimiento = prestamo.getVencimiento();
+        let fechaVencimiento = prestamo.getVencimiento();
+        
         if (fechaDevolucion > fechaVencimiento){
-            const diasDemora = Math.ceil((fechaDevolucion.getTime()) - fechaVencimiento.getTime());
+            const diasDemora = Math.ceil(((fechaDevolucion.getTime()) - (fechaVencimiento.getTime())) / (1000 * 3600 * 24));
             let cargaPorDemora = 0;
             switch (true){
                 case diasDemora >= 1 && diasDemora <2: 
@@ -92,76 +100,37 @@ export class Biblioteca{
                 case diasDemora > 5 && diasDemora <= 10:
                     cargaPorDemora = 6;
                     break;
-                case diasDemora > 10:
+                case diasDemora > 10: //Se elimina al cliente de la biblioteca por exceder el limite
+                    this.eliminarCliente(cliente);
                     console.log(`${cliente.getNombre()} excedio el limite de dias de devolucion y fue eliminado`);
                     break;
                     default:
             }
-            cliente.addPuntos(cargaPorDemora);
+            cliente.addPuntos(cargaPorDemora); // Se le agregan los puntos al cliente.
             console.log(`${cliente.getNombre()} devolvio ${elemento.getTitulo()} tarde. Usteded tiene una penalizacion de ${cargaPorDemora} puntos.`);
-        } else {
-            console.log(`${cliente.getNombre()} devolvio ${elemento.getTitulo()} en tiempo y forma`);
+            cliente.setPenalizado();
+        } else { // Resta puntos o Despenaliza al usuario.
+            if (cliente.getPuntos() > 1){
+                cliente.removePuntos();
+            }else if (cliente.getPuntos() === 1){
+                cliente.removePuntos();
+                cliente.setDespenalizar();                
+            }
+            console.log(`${cliente.getNombre()} devolvio ${elemento.getTitulo()} en tiempo y forma. Usted tien ${cliente.getPuntos()} puntos.`);
         }
-
-
-
-
         this.prestamos = this.prestamos.filter((buscarPrestamo) => buscarPrestamo !== prestamo);
-        console.log(cliente.getNombre(), "devolvio", elemento.getTitulo(), "En la fecha");
     }
     public encontarPrestamosActivos(elemento: Libreria, cliente: Cliente): Prestamos | undefined{
         return this.prestamos.find((prestamo)=> prestamo.getElementos() === elemento && prestamo.getCliente()=== cliente)
     }
-
-    public listadoPrestamos(): Prestamos[]{
+    public listadoPrestamos(): Prestamos[] { // Mostrar lista de Prestamo        
         return this.prestamos;
     }
-    private validarCliente(cliente:Cliente): boolean{
+    private validarCliente(cliente:Cliente): boolean{  // Validamos si el cliente esta ingresado en la biblioteca
         return this.clientes.includes(cliente);
     }
-    private buscarElemento(elemento: Libreria): Libreria | undefined {
+    private buscarElemento(elemento: Libreria): Libreria | undefined { //Buscamos si el elemento deseado existe
         return this.elementos.find((i) => i === elemento);
     }
 }
 
-// Creacion de biblioteca
-let biblioteca1 = new Biblioteca("AS", "25 de mayo");
-
-// Crearcion de elementos
-let libro1 = new Libro("Casita", "Cosito", 1896,);
-//let revista1 = new Revista ("Gente", "Mimina", 2023);
-
-// Creacion de clientes
-let cliente1 = new Cliente("Ludmila", "Miguens", "uriburu", 289355);
-//let cliente2 = new Cliente("Ludmilaaaaa", "Miguens", "uriburu", 289355);
-
-
-let prestamo1 = new Prestamos(cliente1, libro1);
-
-//Agregamos los clientes a la biblioteca.
-biblioteca1.addCliente(cliente1);
-//biblioteca1.addCliente(cliente2);
-
-// Agregamos los elementos a la biblioteca.
-biblioteca1.addElemento(libro1);
-//biblioteca1.addElemento(revista1);
-
-// Realizamos un prestamo.
-biblioteca1.addPrestamos(cliente1,libro1);
-//biblioteca1.addPrestamos(cliente2,revista1);
-//biblioteca1.addPrestamos(cliente1,libro1); // No se puede realizar ya que esta prestado el libro.
-
-// Devolver el elemento.
-let fechaDevolucion = new Date();
-fechaDevolucion.setDate(fechaDevolucion.getDate() +8);
-biblioteca1.devolverElemento(libro1,cliente1, fechaDevolucion);
-
-// Mostramos la lista de clientes.
-//biblioteca1.listaClientes();
-//biblioteca1.eliminarCliente(cliente1); // Eliminar cliente de la biblioteca.
-//biblioteca1.listaClientes();
-
-//Mostramos la lista de elementos.
-//console.log(biblioteca1.listaElementos());
-//biblioteca1.eliminarElementos(revista1); //Eliminamos un elemento de la biblioteca.
-//console.log(biblioteca1.listaElementos());
