@@ -9,7 +9,7 @@ import { Libreria } from "./libreria";
 
 
 //sistema de archivos.
-class AdministradorDeArchivos{ //clase autilitaria, tiene solo metodos, no gerera objetos.
+export class AdministradorDeArchivos{ //clase autilitaria, tiene solo metodos, no genera objetos.
     static leerArchivos(){ //Lee los prestamos que estan cargados en el Json y los muestra como un arreglo
         try {
             const prestamos = fs.readFileSync("./listaDePrestamos.json",{encoding: "utf-8"});  
@@ -32,7 +32,7 @@ class AdministradorDeArchivos{ //clase autilitaria, tiene solo metodos, no gerer
 }
 
 
- export class AdministradorDePrestamos {
+ /*export class AdministradorDePrestamos {
     private prestamos: Prestamos[];
     public constructor(){
         this.prestamos = []
@@ -155,7 +155,7 @@ class AdministradorDeArchivos{ //clase autilitaria, tiene solo metodos, no gerer
    "Borrar un prestamo",
    "Lista de prestamos activos"
 ]
-}
-const menu1 = new AdministradorDePrestamos();
-menu1.menu();
+}*/
+//const menu1 = new AdministradorDePrestamos();
+//menu1.menu();
 

@@ -63,11 +63,12 @@ export class Biblioteca{
         if(!elementoExistente || !elementoExistente.estaDisponible()){ //Validar si existe el elemento
             console.log("No esta disponible");
             return;
-        } /*const penalizado = cliente.setPenalizado();
-          if(penalizado){ // Validacion para ver si el usuario esta penalizado
+        } 
+        const penalizado = cliente.setPenalizado();
+          if(!cliente === penalizado){ // Validacion para ver si el usuario esta penalizado
             console.log(cliente.getNombre(),"No puede retirar ", elemento.getTitulo(),"Usted esta penalizado");
             return;
-        } */
+        } 
         elementoExistente.marcarNoDisponible();
         const nuevoPrestamo = new Prestamos(cliente,elementoExistente); //Tanto el cliente como el elemento existe y se puede realizar el prestamo
         this.prestamos.push(nuevoPrestamo); // Se agrega el prestamo al arreglo de prestamos
