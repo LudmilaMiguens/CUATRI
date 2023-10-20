@@ -1,0 +1,21 @@
+#seccion1{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    padding: 5%;
+    background-color:rgb(254, 243, 254) ;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+article{
+    margin: 10px;
+    border: 1px solid;
+    border-radius: 1%;
+    border-style:groove;
+    box-shadow: 5px 5px 10px rgb(132, 131, 131);
+}
+h1{
+    text-align: center;
+    background-color: rgb(242, 160, 187);
+    padding: 2%;
+}
